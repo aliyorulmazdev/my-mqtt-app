@@ -1,5 +1,4 @@
 "use client"
-// pages/index.js
 import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
 import { db } from './firebaseConfig'; // db bağlantısını ekleyin
@@ -7,6 +6,11 @@ import { collection, getDocs } from 'firebase/firestore';
 
 const Home = () => {
   const [temperatureData, setTemperatureData] = useState([]);
+
+  const sortDataByDate = (data) => {
+    // Sort data based on date in descending order
+    return data.sort((a, b) => b.date.seconds - a.date.seconds);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,8 +21,14 @@ const Home = () => {
         // Alınan veriyi bir diziye dönüştür
         const data = querySnapshot.docs.map((doc) => doc.data());
 
+        // Sort data by date
+        const sortedData = sortDataByDate(data);
+
+        // Take the first 5 elements
+        const slicedData = sortedData.slice(0, 10);
+
         // State'i güncelle
-        setTemperatureData(data);
+        setTemperatureData(slicedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
